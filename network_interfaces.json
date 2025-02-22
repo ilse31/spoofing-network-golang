@@ -1,0 +1,20 @@
+[
+  {
+    "index": 1,
+    "name": "lo",
+    "guid": "",
+    "flags": "up|loopback|running"
+  },
+  {
+    "index": 2,
+    "name": "wlan0",
+    "guid": "fc:44:82:be:07:7b",
+    "flags": "up|broadcast|multicast|running"
+  },
+  {
+    "index": 3,
+    "name": "docker0",
+    "guid": "02:42:59:56:e2:3f",
+    "flags": "up|broadcast|multicast"
+  }
+]
