@@ -40,17 +40,25 @@ type Device struct {
 
 func main() {
 	r := mux.NewRouter()
-	r.HandleFunc("/scan_interfaces", scanInterfaces).Methods("GET")
-	r.HandleFunc("/interface_data", getInterfaceData).Methods("GET")
-	r.HandleFunc("/scan_network", scanNetwork).Methods("GET")
-	r.HandleFunc("/start_netcut", startNetcut).Methods("POST")
-	r.HandleFunc("/stop_netcut", stopNetcut).Methods("POST")
-	r.HandleFunc("/whitelist", addToWhitelist).Methods("POST")
-	r.HandleFunc("/whitelist", removeFromWhitelist).Methods("DELETE")
-	r.HandleFunc("/whitelist", getWhitelist).Methods("GET")
-	r.HandleFunc("/help", help).Methods("GET")
+	r.HandleFunc("/scan_interfaces", logRequest(scanInterfaces)).Methods("GET")
+	r.HandleFunc("/interface_data", logRequest(getInterfaceData)).Methods("GET")
+	r.HandleFunc("/scan_network", logRequest(scanNetwork)).Methods("GET")
+	r.HandleFunc("/start_netcut", logRequest(startNetcut)).Methods("POST")
+	r.HandleFunc("/stop_netcut", logRequest(stopNetcut)).Methods("POST")
+	r.HandleFunc("/whitelist", logRequest(addToWhitelist)).Methods("POST")
+	r.HandleFunc("/whitelist", logRequest(removeFromWhitelist)).Methods("DELETE")
+	r.HandleFunc("/whitelist", logRequest(getWhitelist)).Methods("GET")
+	r.HandleFunc("/help", logRequest(help)).Methods("GET")
 
+	fmt.Println("Server is running on port 5000")
 	http.ListenAndServe(":5000", r)
+}
+
+func logRequest(handler http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("Received %s request for %s", r.Method, r.URL.Path)
+		handler(w, r)
+	}
 }
 
 func scanInterfaces(w http.ResponseWriter, r *http.Request) {
