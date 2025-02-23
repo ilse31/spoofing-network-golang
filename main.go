@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"os"
+	"newtwork-spoofing/lib"
 	"os/exec"
 	"strings"
 	"sync"
@@ -17,26 +17,13 @@ import (
 
 var (
 	interfacesFile = "network_interfaces.json"
-	devicesFile    = "network_devices.json"
-	whitelistFile  = "ip_whitelist.json"
-	netcutFile     = "netcut_ips.json"
+	// devicesFile    = "network_devices.json"
+	whitelistFile = "ip_whitelist.json"
+	// netcutFile     = "netcut_ips.json"
 
 	activeThreads sync.WaitGroup
 	stopCh        = make(chan struct{})
 )
-
-type NetworkInterface struct {
-	Index int    `json:"index"`
-	Name  string `json:"name"`
-	GUID  string `json:"guid"`
-	Flags string `json:"flags"`
-}
-
-type Device struct {
-	IP   string `json:"ip"`
-	MAC  string `json:"mac"`
-	Host string `json:"host"`
-}
 
 func main() {
 	r := mux.NewRouter()
@@ -49,9 +36,8 @@ func main() {
 	r.HandleFunc("/whitelist", logRequest(removeFromWhitelist)).Methods("DELETE")
 	r.HandleFunc("/whitelist", logRequest(getWhitelist)).Methods("GET")
 	r.HandleFunc("/help", logRequest(help)).Methods("GET")
-
-	fmt.Println("Server is running on port 5000")
-	http.ListenAndServe(":5000", r)
+	fmt.Println("Server is running on port 3000")
+	http.ListenAndServe(":3000", r)
 }
 
 func logRequest(handler http.HandlerFunc) http.HandlerFunc {
@@ -68,24 +54,24 @@ func scanInterfaces(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var interfaces []NetworkInterface
+	var interfaces []lib.NetworkInterface
 	for _, iface := range ifaces {
-		interfaces = append(interfaces, NetworkInterface{Name: iface.Name, GUID: iface.HardwareAddr.String(), Flags: iface.Flags.String(), Index: iface.Index})
+		interfaces = append(interfaces, lib.NetworkInterface{Name: iface.Name, GUID: iface.HardwareAddr.String(), Flags: iface.Flags.String(), Index: iface.Index})
 	}
 
-	saveToJSON(interfacesFile, interfaces)
+	lib.SaveToJSON(interfacesFile, interfaces)
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"status": "Success Scan interfaces"})
 }
 
 func getInterfaceData(w http.ResponseWriter, r *http.Request) {
-	var interfaces []NetworkInterface
-	loadFromJSON(interfacesFile, &interfaces)
+	var interfaces []lib.NetworkInterface
+	lib.LoadFromJSON(interfacesFile, &interfaces)
 	json.NewEncoder(w).Encode(interfaces)
 }
 
 func scanNetwork(w http.ResponseWriter, r *http.Request) {
-	var devices []Device
+	var devices []lib.Device
 
 	// Run ARP scan to get IP-MAC mappings
 	cmd := exec.Command("arp", "-a")
@@ -101,13 +87,16 @@ func scanNetwork(w http.ResponseWriter, r *http.Request) {
 		if len(fields) >= 2 {
 			ip := strings.Trim(fields[0], "()")
 			mac := fields[1]
-			devices = append(devices, Device{IP: ip, MAC: mac, Host: ""})
+			devices = append(devices, lib.Device{IP: ip, MAC: mac, Host: ""})
 		}
 	}
 
 	// Encode the result as JSON and send response
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(devices)
+}
+
+func ScanNetworkFromInterface(w http.ResponseWriter, r *http.Request) {
 }
 
 func startNetcut(w http.ResponseWriter, r *http.Request) {
@@ -143,9 +132,9 @@ func addToWhitelist(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var whitelist []string
-	loadFromJSON(whitelistFile, &whitelist)
+	lib.LoadFromJSON(whitelistFile, &whitelist)
 	whitelist = append(whitelist, ips...)
-	saveToJSON(whitelistFile, whitelist)
+	lib.SaveToJSON(whitelistFile, whitelist)
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"status": "IPs added to whitelist"})
 }
@@ -158,21 +147,21 @@ func removeFromWhitelist(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var whitelist []string
-	loadFromJSON(whitelistFile, &whitelist)
+	lib.LoadFromJSON(whitelistFile, &whitelist)
 	var newWhitelist []string
 	for _, ip := range whitelist {
 		if !contains(ips, ip) {
 			newWhitelist = append(newWhitelist, ip)
 		}
 	}
-	saveToJSON(whitelistFile, newWhitelist)
+	lib.SaveToJSON(whitelistFile, newWhitelist)
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"status": "IPs removed from whitelist"})
 }
 
 func getWhitelist(w http.ResponseWriter, r *http.Request) {
 	var whitelist []string
-	loadFromJSON(whitelistFile, &whitelist)
+	lib.LoadFromJSON(whitelistFile, &whitelist)
 	json.NewEncoder(w).Encode(whitelist)
 }
 
@@ -231,7 +220,7 @@ func help(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(helpInfo)
 }
 
-func arpSpoofingManager(targetIPs []string, numThreads int) {
+func arpSpoofingManager(targetIPs []string, _ int) {
 	for _, ip := range targetIPs {
 		activeThreads.Add(1)
 		go func(ip string) {
@@ -247,33 +236,6 @@ func arpSpoofingManager(targetIPs []string, numThreads int) {
 				}
 			}
 		}(ip)
-	}
-}
-
-func saveToJSON(filename string, data interface{}) {
-	file, err := os.Create(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	encoder := json.NewEncoder(file)
-	encoder.SetIndent("", "  ")
-	if err := encoder.Encode(data); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func loadFromJSON(filename string, data interface{}) {
-	file, err := os.Open(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	decoder := json.NewDecoder(file)
-	if err := decoder.Decode(data); err != nil {
-		log.Fatal(err)
 	}
 }
 

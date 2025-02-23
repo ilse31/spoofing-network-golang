@@ -1,20 +1,152 @@
 [
   {
     "index": 1,
-    "name": "lo",
+    "name": "lo0",
     "guid": "",
-    "flags": "up|loopback|running"
+    "flags": "up|loopback|multicast|running"
   },
   {
     "index": 2,
-    "name": "wlan0",
-    "guid": "fc:44:82:be:07:7b",
-    "flags": "up|broadcast|multicast|running"
+    "name": "gif0",
+    "guid": "",
+    "flags": "pointtopoint|multicast"
   },
   {
     "index": 3,
-    "name": "docker0",
-    "guid": "02:42:59:56:e2:3f",
-    "flags": "up|broadcast|multicast"
+    "name": "stf0",
+    "guid": "",
+    "flags": "0"
+  },
+  {
+    "index": 4,
+    "name": "anpi1",
+    "guid": "02:5d:cc:b9:c8:f9",
+    "flags": "up|broadcast|multicast|running"
+  },
+  {
+    "index": 5,
+    "name": "anpi3",
+    "guid": "02:5d:cc:b9:c8:fb",
+    "flags": "up|broadcast|multicast|running"
+  },
+  {
+    "index": 6,
+    "name": "anpi2",
+    "guid": "02:5d:cc:b9:c8:fa",
+    "flags": "up|broadcast|multicast|running"
+  },
+  {
+    "index": 7,
+    "name": "anpi0",
+    "guid": "02:5d:cc:b9:c8:f8",
+    "flags": "up|broadcast|multicast|running"
+  },
+  {
+    "index": 8,
+    "name": "en0",
+    "guid": "20:a5:cb:cb:97:8d",
+    "flags": "up|broadcast|multicast|running"
+  },
+  {
+    "index": 9,
+    "name": "en6",
+    "guid": "02:5d:cc:b9:c8:d8",
+    "flags": "up|broadcast|multicast|running"
+  },
+  {
+    "index": 10,
+    "name": "en7",
+    "guid": "02:5d:cc:b9:c8:d9",
+    "flags": "up|broadcast|multicast|running"
+  },
+  {
+    "index": 11,
+    "name": "en8",
+    "guid": "02:5d:cc:b9:c8:da",
+    "flags": "up|broadcast|multicast|running"
+  },
+  {
+    "index": 12,
+    "name": "en9",
+    "guid": "02:5d:cc:b9:c8:db",
+    "flags": "up|broadcast|multicast|running"
+  },
+  {
+    "index": 13,
+    "name": "en2",
+    "guid": "36:38:9d:29:eb:c0",
+    "flags": "up|broadcast|multicast|running"
+  },
+  {
+    "index": 14,
+    "name": "en3",
+    "guid": "36:38:9d:29:eb:c4",
+    "flags": "up|broadcast|multicast|running"
+  },
+  {
+    "index": 15,
+    "name": "en4",
+    "guid": "36:38:9d:29:eb:c8",
+    "flags": "up|broadcast|multicast|running"
+  },
+  {
+    "index": 16,
+    "name": "en5",
+    "guid": "36:38:9d:29:eb:cc",
+    "flags": "up|broadcast|multicast|running"
+  },
+  {
+    "index": 17,
+    "name": "ap1",
+    "guid": "c2:cb:9e:b9:79:a9",
+    "flags": "up|broadcast|multicast|running"
+  },
+  {
+    "index": 18,
+    "name": "en1",
+    "guid": "c6:d2:2e:c6:ac:9d",
+    "flags": "up|broadcast|multicast|running"
+  },
+  {
+    "index": 19,
+    "name": "bridge0",
+    "guid": "36:38:9d:29:eb:c0",
+    "flags": "up|broadcast|multicast|running"
+  },
+  {
+    "index": 20,
+    "name": "awdl0",
+    "guid": "ba:46:10:e8:37:8f",
+    "flags": "up|broadcast|multicast|running"
+  },
+  {
+    "index": 21,
+    "name": "llw0",
+    "guid": "ba:46:10:e8:37:8f",
+    "flags": "up|broadcast|multicast|running"
+  },
+  {
+    "index": 22,
+    "name": "utun0",
+    "guid": "",
+    "flags": "up|pointtopoint|multicast|running"
+  },
+  {
+    "index": 23,
+    "name": "utun1",
+    "guid": "",
+    "flags": "up|pointtopoint|multicast|running"
+  },
+  {
+    "index": 24,
+    "name": "utun2",
+    "guid": "",
+    "flags": "up|pointtopoint|multicast|running"
+  },
+  {
+    "index": 25,
+    "name": "utun3",
+    "guid": "",
+    "flags": "up|pointtopoint|multicast|running"
   }
 ]
